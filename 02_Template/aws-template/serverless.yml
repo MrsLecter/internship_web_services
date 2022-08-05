@@ -1,0 +1,27 @@
+org: missislecter
+app: aws-template
+service: aws-template
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: us-east-1
+
+functions:
+  hello:
+    handler: src/handler.hello
+    events:
+      - httpApi:
+          path: /hello
+          method: get
+
+
+plugins:
+  - serverless-webpack
+
+custom:
+  webpack:
+    config: webpack.config.js
+
+    

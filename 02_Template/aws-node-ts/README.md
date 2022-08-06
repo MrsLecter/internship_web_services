@@ -11,10 +11,6 @@ Template for AWS based on Serverless Framework
 - Joi (for validation);
 - Middy (middleware)
 
-## Requirements
-
- - NodeJS `lts/fermium (v.14.15.0)`
-
 ## How to use
 
 1) <code>npm install</code> - install all dependencies

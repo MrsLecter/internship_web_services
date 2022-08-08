@@ -13,9 +13,8 @@ Template for AWS based on Serverless Framework
 
 ## How to use
 
-1) <code>npm install</code> - install all dependencies
-2) <code>sls login</code> - to login in aws
-2) <code>sls deploy</code> - deploy project
+1) <code>sls login</code> - to login in aws
+2) <code>sls create --tamplate-url [YourGithubTemplate] --path [yourServiceName]</code> - install template
 
 ## Installation/deployment instructions
 

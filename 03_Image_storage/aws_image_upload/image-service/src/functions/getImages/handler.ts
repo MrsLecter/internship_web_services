@@ -10,8 +10,8 @@ const { dynamoDB } = require("../../libs/db-client");
 const BASE_URL = `https://${process.env.BUCKET_NAME}.s3.amazonaws.com/`
 
 const getImages = async (event) => {
-  const email = event.queryStringParameters["email"];
-  console.log("input", email);
+  const userEmail = event.queryStringParameters["email"];
+  console.log("input", userEmail);
 
   //-----get info from s3bucket-----
   // const data = await s3Client.send(
@@ -38,45 +38,24 @@ const getImages = async (event) => {
 
   const params = {
     TableName: process.env.TABLE_NAME,
-    Key: {
-      "user": {
-        S: email,
-      },
-      "userHash": {
-        S: "1",
-      },
-    },
-    "ProjectionExpression": "images",
+    KeyConditionExpression: `#current = :cccc`,
+    ExpressionAttributeNames: {"#current": "user"},
+    ExpressionAttributeValues: {":cccc":{S:userEmail}},
   };
 
-  const params2 = {
-    Key: {
-      'user': {
-        S: email,
-      },
-    },
-    ProjectionExpression: 'imageName',
-    TableName: process.env.TABLE_NAME,
-  };
+ const results = await dynamoDB.query(params).promise();
+  let res = '';
+  let name;
+  console.log(results, results.Items, results.Items[0].imageName.S);
+  for(let i =0; i < results.Items.length; i++){
+    name = results.Items[i].imageName.S;
+    res+= `${name}: ${BASE_URL + name}`;
+  }
 
- const results = await dynamoDB.getItem(params).promise();
- const imageArr = results.Item.images.SS;
-const objRes = {};
-imageArr.forEach(item => {
-  objRes[item] = BASE_URL+item;
-})
-try{
   return formatJSONResponse({
-    message: 'ok',
+      message: `${userEmail}'s images: ${res}` ,
+      
   });
-}catch(err){
-  return formatJSONResponse({
-    message: err,
-  });
-}
-  
- 
-  // derr2 = await dynamoDB.getItem(params2).promise();
 };
 
 export const main = middyfy(getImages);

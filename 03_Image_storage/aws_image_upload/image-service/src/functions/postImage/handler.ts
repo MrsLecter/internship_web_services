@@ -4,6 +4,7 @@ import {formatJSONResponse,
 // import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 // const { ListObjectsCommand, PutObjectCommand} = require("@aws-sdk/client-s3");
 import { middyfy } from "../../libs/lambda";
+const CryptoJS = require('crypto-js');
 
 // const { s3Client } = require("../../libs/s3-client");
 const { dynamoDB } = require("../../libs/db-client");
@@ -29,9 +30,10 @@ const { dynamoDB } = require("../../libs/db-client");
 //--------joi schema-----------------
 
 const postImage = async (event) => {
-  const email = event.queryStringParameters["email"];
+  const userEmail = event.queryStringParameters["email"];
   const imageName = event.queryStringParameters["name"];
-  console.log('input', email, imageName)
+  console.log('input', userEmail, imageName);  
+  // postImagePromise(userEmail, imageName);
   // const token = event.headers['Authorization'].split(' ')[1];
 
   //-----check out user input-----
@@ -83,43 +85,24 @@ const postImage = async (event) => {
   // console.log('createPresignedPost',url, fields )
   
   //-----post in db-----
-  const params = {
-    TableName: process.env.TABLE_NAME,
-    Key: {
+    const paramsPUT = {
+    Item: {
       "user": {
-        S: email,
+        S: userEmail,
       },
-      "userHash": {
-        S: "1",
+      "imageHash": {
+        S: CryptoJS.SHA256(imageName).toString(CryptoJS.enc.Base64),
+      },
+      "imageName": {
+        S: imageName,
       },
     },
-    "ProjectionExpression": "images",
+    TableName: process.env.TABLE_NAME,
   };
 
- const results = await dynamoDB.getItem(params).promise();
- const imageArr = results.Item.images.SS;
- imageArr.push(imageName);
-
-
-
+  await dynamoDB.putItem(paramsPUT).promise();
 
   
-  const paramsPUT = {
-    Item: {
-      'user': {
-        S: email,
-      },
-      'userHash': {
-        S: '1'
-      },
-      "images": {
-        SS: imageName
-      }
-    },
-    TableName: process.env.TABLE_NAME,
-  };
-
-  let res = await dynamoDB.putItem(paramsPUT).promise();
   //-----/post in db-----
 
   //-----post in bucket-----
@@ -163,7 +146,7 @@ const postImage = async (event) => {
   // }
   //-----/post in bucket-----
   return formatJSONResponse({
-    message: `Image [${imageName}] added by [${email}] to bucket ${res}`,
+    message: `Image [${imageName}] added by [${userEmail}] to bucket `,
   });
 };
 

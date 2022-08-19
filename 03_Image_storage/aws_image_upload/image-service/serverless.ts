@@ -67,14 +67,14 @@ const serverlessConfiguration: AWS = {
       UsersTable:{
         Type: 'AWS::DynamoDB::Table',
         Properties: {
-          TableName: "userimage",
+          TableName: "userimages",
           AttributeDefinitions:[
             {
               AttributeName: 'user',
               AttributeType: 'S'
             },
             {
-              AttributeName: 'userHash',
+              AttributeName: 'imageHash',
               AttributeType: 'S'
             }
           ],
@@ -84,7 +84,7 @@ const serverlessConfiguration: AWS = {
               KeyType: 'HASH'
             },
             {
-              AttributeName: 'userHash',
+              AttributeName: 'imageHash',
               KeyType: 'RANGE'
             }
           ],
@@ -107,7 +107,7 @@ const serverlessConfiguration: AWS = {
       packager: 'npm', 
       excludeFiles: 'src/**/*.test.js',
     },
-    tableName: 'userimage',
+    tableName: 'userimages',
     "serverless-layers":{
        functions:{ hello, getImages, postImage, deleteImage },
        dependenciesPath: './package.json',

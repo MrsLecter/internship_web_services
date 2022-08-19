@@ -1,6 +1,8 @@
 // import type { ValidatedEventAPIGatewayProxyEvent } from '../../libs/api-gateway';
 import { formatJSONResponse } from '../../libs/api-gateway';
 import { middyfy } from '../../libs/lambda';
+const { dynamoDB } = require("../../libs/db-client");
+const CryptoJS = require('crypto-js');
 
 // import schema from './schema';
 
@@ -20,16 +22,16 @@ import { middyfy } from '../../libs/lambda';
 //--------joi schema-----------------
 // const { DeleteObjectCommand } = require("@aws-sdk/client-s3");
 // const {s3Client} = require('../../libs/s3-client');
-const { dynamoDB } = require("../../libs/db-client");
+
 // const ddb = require('../../libs/db-client-aws');
 
 //configure environment
 // const BUCKET_NAME = process.env.BUCKET_NAME;
 
 const deleteImage = async (event) => {
-  const email = event.queryStringParameters["email"];
+  const userEmail = event.queryStringParameters["email"];
   const imageName = event.queryStringParameters['name'];
-  console.log('input', email, imageName);
+  console.log('input', userEmail, imageName);
   //-----delete from bucket -----
   // try{
   //   const params = { Key: imageName, Bucket: BUCKET_NAME };
@@ -40,40 +42,21 @@ const deleteImage = async (event) => {
   //-----/delete from bucket -----
 
   //-----delete from db-----
-  const paramsGet = {
-    TableName: process.env.TABLE_NAME,
+  const paramsDelete = {
     Key: {
       "user": {
-        S: email,
+        S: userEmail,
       },
-      "userHash": {
-        S: "1",
+      "imageHash": {
+        S: CryptoJS.SHA256(imageName).toString(CryptoJS.enc.Base64),
       },
-    },
-    "ProjectionExpression": "images",
-  };
-  const results = await dynamoDB.getItem(paramsGet).promise();
-  const imageArr = results.Item.images.SS;
-  imageArr.splice(imageArr.indexOf(imageName), 1);
-  const paramsPut = {
-    Item: {
-      'user': {
-        S: email,
-      },
-      'userHash': {
-        S: '1'
-      },
-      "images": {
-        SS: imageArr
-      }
     },
     TableName: process.env.TABLE_NAME,
   };
-  const res = await dynamoDB.putItem(paramsPut).promise();
+  await dynamoDB.deleteItem(paramsDelete).promise();
 //-----delete from db-----
-
   return formatJSONResponse({
-        message: `Image deleted ${res}`
+        message: `Image [${imageName}] deleted by user [${userEmail}]`
       });
 };
 

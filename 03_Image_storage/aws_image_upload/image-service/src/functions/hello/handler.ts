@@ -1,10 +1,6 @@
-import type { ValidatedEventAPIGatewayProxyEvent } from '../../libs/api-gateway';
 import { formatJSONResponse } from '../../libs/api-gateway';
 import { middyfy } from '../../libs/lambda';
 // import authMiddleware from '../../libs/auth-middleware';
-
-import schema from './schema';
-
 //error handler
 // const Boom = require('@hapi/boom');
 //body validator
@@ -20,7 +16,11 @@ import schema from './schema';
 // });
 //--------joi schema-----------------
 
-const hello: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
+const hello = async (event) => {
+  const token = event.headers['Authorization'].split(' ')[1];
+  console.log(token)
+  // const pass = rawUser.UserAttributes.find((attr) => attr.Name === 'password')?.Value!;
+  // const email =rawUser.UserAttributes.find((attr) => attr.Name === 'email')?.Value!;
   // console.log("Event:", JSON.stringify(event));
   // if(event['type'] != 'TOKEN'){
   //   const error = Boom.badRequest('Unauthorized');
@@ -29,8 +29,7 @@ const hello: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) =
   //   throw error;
   // }
   
-  const token = event.headers['Authorization'].split(' ')[1];
-  console.log(token);
+
   // authMiddleware(token)
   // .then(data => mydata = data)
   // .catch(err => console.log(err))

@@ -2,6 +2,7 @@ import type { AWS } from '@serverless/typescript';
 
 import hello from '@functions/hello';
 import getImages from '@functions/getImages';
+import getUrl from '@functions/getUrl';
 import postImage from '@functions/postImage';
 import deleteImage from '@functions/deleteImage';
 
@@ -24,6 +25,7 @@ const serverlessConfiguration: AWS = {
       ACCESS_KEY_ID: process.env.ACCESS_KEY_ID,
       SECRET_ACCESS_KEY: process.env.SECRET_ACCESS_KEY,
       TABLE_NAME: process.env.TABLE_NAME,
+      USER_POOL_NAME: process.env.USER_POOL_NAME,
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
       
@@ -45,6 +47,26 @@ const serverlessConfiguration: AWS = {
   },
   resources:{
     Resources:{
+      // MyApi: {
+      //   Type: 'AWS::Serverless::Api',
+      //   Properties: {
+      //     StageName: "Prod",
+      //     Cors: "'*'",
+      //     Auth: {
+      //       DefaultAuthorizer: 'MyCognitoAuthorizer',
+      //       Authorizers: {
+      //         MyCognitoAuthorizer: {
+      //           UserPoolArn: 'arn:aws:cognito-idp:us-east-1:344387451641:userpool/us-east-1_CIHwDAAt7'
+      //         }
+                
+      //       }
+              
+      //     }
+            
+      //   }
+          
+      // },
+        
       // imageS3bucket: {
       //   Type: 'AWS::S3::Bucket',
       //   Properties:{
@@ -62,8 +84,11 @@ const serverlessConfiguration: AWS = {
       //   }
       // },
       CognitoUserPool:{
-        Type: 'AWS::Cognito::UserPool'
-      },
+        Type: 'AWS::Cognito::UserPool',
+        Properties: {
+          UserPoolName: 'image-s3-pool',
+        },
+      }, 
       UsersTable:{
         Type: 'AWS::DynamoDB::Table',
         Properties: {
@@ -109,7 +134,7 @@ const serverlessConfiguration: AWS = {
     },
     tableName: 'userimages',
     "serverless-layers":{
-       functions:{ hello, getImages, postImage, deleteImage },
+       functions:{ hello, getImages, postImage, deleteImage, getUrl },
        dependenciesPath: './package.json',
        layersDeploymentBucket: 'image-s3bucket-storage-next'
     }

@@ -1,4 +1,3 @@
-import schema from './schema';
 import { handlerPath } from '../../libs/handler-resolver';
 
 export default {
@@ -9,11 +8,7 @@ export default {
         method: 'post',
         path: 'images',
         cors: true,
-        request: {
-          schemas: {
-            'application/json': schema,
-          },
-        },
+        request: {},
         authorizer: {
           name: 'MyAuthorizer',
           arn:  process.env.COGNITO_ARN,

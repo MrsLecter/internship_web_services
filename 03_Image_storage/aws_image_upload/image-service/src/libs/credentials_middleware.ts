@@ -15,8 +15,8 @@ const joiSchema = Joi.object({
 export const credentialsMiddleware = () => {
   const customMiddlewareBefore = (request) => {
     const { event } = request;
-    const userEmail = event.body.email;
-    const userPassword = event.body.password;
+    const userEmail = (event.body.email) ? event.body.email : event.queryStringParameters["email"] ;
+    const userPassword = (event.body.password)? event.body.password : event.queryStringParameters["pasword"];
     //validation
     const valueValid = joiSchema.validate({
       email: userEmail,

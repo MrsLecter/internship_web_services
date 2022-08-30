@@ -1,10 +1,7 @@
 import {formatJSONResponse,formatJSONResponseError} from "../../libs/api-gateway";
-import type { ValidatedEventAPIGatewayProxyEvent } from '@libs/api-gateway';
 const { ListObjectsCommand, PutObjectCommand} = require("@aws-sdk/client-s3");
 import { middyfy } from "../../libs/lambda";
 const CryptoJS = require('crypto-js');
-
-import schema from './schema';
 
 const { s3Client } = require("../../libs/s3-client");
 const { dynamoDB } = require("../../libs/db-client");
@@ -12,7 +9,7 @@ const { dynamoDB } = require("../../libs/db-client");
 //error handler
 const Boom = require("@hapi/boom");
 
-const postImage: ValidatedEventAPIGatewayProxyEvent<typeof schema>  = async (event) => {
+const postImage = async (event) => {
 
   const userEmail = event.queryStringParameters["email"];
   const imageName = event.queryStringParameters["name"];

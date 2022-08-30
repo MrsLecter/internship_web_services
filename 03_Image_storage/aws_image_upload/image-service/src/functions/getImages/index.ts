@@ -6,8 +6,8 @@ export default {
   events: [
     {
       http: {
-        method: 'get',
-        path: 'images',
+        method: 'post',
+        path: 'getimages',
         request: {
           schemas: {
             'application/json': schema,

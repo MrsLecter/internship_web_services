@@ -1,6 +1,5 @@
 import type { AWS } from '@serverless/typescript';
 
-import hello from '@functions/hello';
 import getImages from '@functions/getImages';
 import getUrl from '@functions/getUrl';
 import postImage from '@functions/postImage';
@@ -11,7 +10,7 @@ require('dotenv').config();
 const serverlessConfiguration: AWS = {
   service: 'image-service',
   frameworkVersion: '3',
-  plugins: ['serverless-webpack', 'serverless-layers'],
+  plugins: ['serverless-webpack','serverless-offline', 'serverless-layers'],
   provider: {
     name: 'aws',
     runtime: 'nodejs14.x',
@@ -26,9 +25,10 @@ const serverlessConfiguration: AWS = {
       SECRET_ACCESS_KEY: process.env.SECRET_ACCESS_KEY,
       TABLE_NAME: process.env.TABLE_NAME,
       USER_POOL_NAME: process.env.USER_POOL_NAME,
-      AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
-      NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
+      COGNITO_ARN: process.env.COGNITO_ARN,
       
+      AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',      
     },
     region: 'us-east-1',
     alb:{
@@ -85,9 +85,6 @@ const serverlessConfiguration: AWS = {
       // },
       CognitoUserPool:{
         Type: 'AWS::Cognito::UserPool',
-        Properties: {
-          UserPoolName: 'image-s3-pool',
-        },
       }, 
       UsersTable:{
         Type: 'AWS::DynamoDB::Table',
@@ -122,7 +119,7 @@ const serverlessConfiguration: AWS = {
     }
   },
   // import the function via paths
-  functions: { hello, getImages, postImage, deleteImage },
+  functions: { getImages, postImage, deleteImage, getUrl },
   package: { individually: true },
   custom: {
     webpack:
@@ -134,7 +131,7 @@ const serverlessConfiguration: AWS = {
     },
     tableName: 'userimages',
     "serverless-layers":{
-       functions:{ hello, getImages, postImage, deleteImage, getUrl },
+       functions:{ getImages, postImage, deleteImage, getUrl },
        dependenciesPath: './package.json',
        layersDeploymentBucket: 'image-s3bucket-storage-next'
     }

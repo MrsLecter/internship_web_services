@@ -1,8 +1,7 @@
 import {formatJSONResponse} from "../../libs/api-gateway";
+import middyJsonBodyParser from "@middy/http-json-body-parser";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
-// const { ListObjectsCommand, PutObjectCommand} = require("@aws-sdk/client-s3");
-import { middyfy } from "../../libs/lambda";
-// const CryptoJS = require('crypto-js');
+import middy from "@middy/core";
 
 const { s3Client } = require("../../libs/s3-client");
 
@@ -26,11 +25,10 @@ const getUrl = async (event) => {
     Fields: Fields,
     Expires: 3600, 
   });
-  console.log('createPresignedPost',url, fields )
 
   return formatJSONResponse({
     message: `Url to upload: ${url}, fields: ${fields}`,
   });
 };
 
-export const main = middyfy(getUrl);
+export const main = middy(getUrl).use(middyJsonBodyParser());

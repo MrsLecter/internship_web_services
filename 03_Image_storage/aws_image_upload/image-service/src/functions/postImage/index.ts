@@ -1,4 +1,4 @@
-// import schema from './schema';
+import schema from './schema';
 import { handlerPath } from '../../libs/handler-resolver';
 
 export default {
@@ -8,19 +8,25 @@ export default {
       http: {
         method: 'post',
         path: 'images',
+        cors: true,
         request: {
+          schemas: {
+            'application/json': schema,
+          },
         },
-        // authorizer: {
-        //   name: 'MyAuthorizer',
-        //   type: 'COGNITO_USER_POOLS',
-        //   arn: 'arn:aws:cognito-idp:us-east-1:344387451641:userpool/us-east-1_CIHwDAAt7'
-        // }
+        authorizer: {
+          name: 'MyAuthorizer',
+          arn:  process.env.COGNITO_ARN,
+          identitySource: 'method.request.header.Authorization',
+          resultTtlInSeconds: 0,
+          type: 'token',       
+        }
       },
-      // authoriser: {
-      //   cognitoUserPool: {
-      //     pool: "image-s3-pool",
-      //   },
-      // },
+      authoriser: {
+        cognitoUserPool: {
+          pool: process.env.USER_POOL_NAME,
+        },
+      },
     },
   ],
 };

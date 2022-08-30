@@ -2,10 +2,6 @@
 
 API GW + AWS Lambda + Cognito + S3 + DynamoDB. Api picture storage. It consists of two services: authorization-service and image-service. 
 
-## How it works
-
-[picture]
-
 ## How to use
 
 1) npm install

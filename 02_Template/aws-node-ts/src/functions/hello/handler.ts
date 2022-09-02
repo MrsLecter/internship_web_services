@@ -1,5 +1,5 @@
 import type { ValidatedEventAPIGatewayProxyEvent } from '../../libs/api-gateway';
-import { formatJSONResponse } from '../../libs/api-gateway';
+import { formatJSONResponse, formatJSONResponseError } from '../../libs/api-gateway';
 import { middyfy } from '../../libs/lambda';
 
 import schema from './schema';
@@ -22,7 +22,7 @@ const joiSchema = Joi.object({
 const hello: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
   const name = event.body.name;
   try {
-    const valueValid = joiSchema.validate({ username: name });
+    const valueValid =joiSchema.validate({ username: name });
     if(valueValid.hasOwnProperty('error')){
       throw new Error(valueValid.error.details[0].message)
     }
@@ -34,7 +34,12 @@ const hello: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) =
     const error = Boom.badRequest((err as Error).message);
     error.output.statusCode = 400; 
     error.reformat(); 
-    throw error;
+    return formatJSONResponseError(
+      {
+        message: error,
+      },
+      error.output.statusCode
+    );
   }
 };
 

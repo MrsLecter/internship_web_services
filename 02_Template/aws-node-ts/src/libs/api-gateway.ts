@@ -10,3 +10,11 @@ export const formatJSONResponse = (response: Record<string, unknown>) => {
     body: JSON.stringify(response)
   }
 }
+
+//handle errors with custom statuscode
+export const formatJSONResponseError = (response: Record<string, unknown>, errorCode: number) => {
+  return {
+    statusCode: errorCode,
+    body: JSON.stringify(response)
+  }
+}

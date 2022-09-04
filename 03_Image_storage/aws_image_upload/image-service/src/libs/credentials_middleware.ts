@@ -26,7 +26,7 @@ export const credentialsMiddleware = () => {
     if (valueValid.hasOwnProperty("error")) {
       return formatJSONResponseError(
         {
-          message: `Invalid token`,
+          message: `Invalid credentials`,
         },
         400
       );

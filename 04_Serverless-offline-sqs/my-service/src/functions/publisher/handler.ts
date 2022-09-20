@@ -1,10 +1,8 @@
 import { formatJSONResponse, formatJSONResponseError } from "@libs/api-gateway";
 import { middyfy } from "@libs/lambda";
 
-// error handler
 const Boom = require("@hapi/boom");
 
-// Create an SQS service object on the elasticmq endpoint
 const AWS = require("aws-sdk");
 const sqs = new AWS.SQS({
   apiVersion: "latest",
@@ -13,28 +11,27 @@ const sqs = new AWS.SQS({
 
 const publisher = async (event) => {
   const body = event.body;
-  try{
-  const params={
+  try {
+    const params = {
       QueueUrl: process.env.SQS_URL,
       MessageBody: JSON.stringify({
         user: body.user,
         token: body.token,
       }),
-    }
-    // Send a message into SQS
-    sqs.sendMessage(params, function(err, data) {
+    };
+    sqs.sendMessage(params, function (err, data) {
       if (err) {
         console.log("Error", err);
       } else {
         console.log("Success", data.MessageId);
       }
     });
-    
+
     return formatJSONResponse({
       message: `Published successfully!`,
       event,
     });
-  }catch(err){
+  } catch (err) {
     const error = Boom.badRequest("S3Client error" + (err as Error).message);
     error.output.statusCode = 400;
     error.reformat();
@@ -42,7 +39,7 @@ const publisher = async (event) => {
       {
         message: error,
       },
-      error.output.statusCode
+      error.output.statusCode,
     );
   }
 };

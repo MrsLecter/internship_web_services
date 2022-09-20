@@ -34,7 +34,7 @@ export const postData = async (token) => {
         } else {
           resolve(result);
         }
-      }
+      },
     );
   });
   connection.end();

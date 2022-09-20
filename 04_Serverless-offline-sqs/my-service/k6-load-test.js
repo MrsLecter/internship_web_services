@@ -1,7 +1,6 @@
 import http from "k6/http";
 
 export const options = {
-  //parallel request
   batch: 1,
   batchPerHost: 1,
 
@@ -17,8 +16,8 @@ export const options = {
   ],
   thresholds: {
     runcounter: ["count>=1000"],
-    http_req_failed: ["rate<0.01"], // http errors should be less than 1%
-    http_req_duration: ["p(95)<200"], // 95% of requests should be below 200ms
+    http_req_failed: ["rate<0.01"],
+    http_req_duration: ["p(95)<200"],
   },
 };
 
@@ -36,7 +35,7 @@ export default function () {
         user: "testuser",
         token: "testtoken",
       }),
-      params
+      params,
     );
   }
 }

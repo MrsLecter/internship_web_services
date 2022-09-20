@@ -4,12 +4,12 @@ export const options = {
   discardResponseBodies: true,
   scenarios: {
     contacts: {
-      executor: 'constant-arrival-rate',
-      duration: '35s',
+      executor: "constant-arrival-rate",
+      duration: "35s",
       rate: 100,
-      timeUnit: '1s',
-      preAllocatedVUs: 1,//amount of users on start
-      maxVUs: 10,//amount of users on end
+      timeUnit: "1s",
+      preAllocatedVUs: 1,
+      maxVUs: 10,
     },
   },
 };
@@ -22,7 +22,6 @@ export default function () {
       "Content-Type": "application/json",
     },
   };
-    // http.post(url_publisher,JSON.stringify({user: "testuser",token: "testtoken",}),params);
-    http.post(url_consumer,{},params);
+  // http.post(url_publisher,JSON.stringify({user: "testuser",token: "testtoken",}),params);
+  http.post(url_consumer, {}, params);
 }
-

@@ -3,7 +3,6 @@ import { SQSEvent } from "aws-lambda";
 import { middyfy } from "@libs/lambda";
 import { postData } from "../../libs/db-client";
 
-// error handler
 const Boom = require("@hapi/boom");
 
 const AWS = require("aws-sdk");
@@ -18,19 +17,16 @@ const consumer = async (event: SQSEvent) => {
       MaxNumberOfMessages: 1,
       QueueUrl: process.env.SQS_URL,
     };
-    //receive 1 message from queue
     sqs.receiveMessage(params, function (err, data) {
       if (err) {
         console.log("Receive Error", err);
       } else if (data.Messages) {
-        //add cryphered message body to db
         postData(data.Messages[0].MD5OfBody);
 
         var deleteParams = {
           QueueUrl: process.env.SQS_URL,
           ReceiptHandle: data.Messages[0].ReceiptHandle,
         };
-        //delete received messae from queue
         sqs.deleteMessage(deleteParams, function (err, data) {
           if (err) {
             console.log("Delete Error", err);
@@ -52,7 +48,7 @@ const consumer = async (event: SQSEvent) => {
       {
         message: error,
       },
-      error.output.statusCode
+      error.output.statusCode,
     );
   }
 };

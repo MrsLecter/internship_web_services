@@ -1,29 +1,28 @@
-import { formatJSONResponse, formatJSONResponseError } from '@libs/api-gateway';
-import { middyfy } from '@libs/lambda';
-import {getData} from '../../libs/db-client';
+import { formatJSONResponse, formatJSONResponseError } from "@libs/api-gateway";
+import { middyfy } from "@libs/lambda";
+import { getData } from "../../libs/db-client";
 
-// error handler
 const Boom = require("@hapi/boom");
 
-//get all data from db
-const getall= async () => {
+const getall = async () => {
   return getData()
-  .then((users:  Array<string>) => {
-    return formatJSONResponse({
-      amount: users.length,
-      message: users,
-  });})
-  .catch((err) =>{
-    const error = Boom.badRequest((err as Error).message);
-    error.output.statusCode = 400;
-    error.reformat();
-    return formatJSONResponseError(
-      {
-        message: error,
-      },
-      error.output.statusCode
-    );
-  })
+    .then((users: Array<string>) => {
+      return formatJSONResponse({
+        amount: users.length,
+        message: users,
+      });
+    })
+    .catch((err) => {
+      const error = Boom.badRequest((err as Error).message);
+      error.output.statusCode = 400;
+      error.reformat();
+      return formatJSONResponseError(
+        {
+          message: error,
+        },
+        error.output.statusCode,
+      );
+    });
 };
 
 export const main = middyfy(getall);

@@ -1,12 +1,12 @@
-import { handlerPath } from '@libs/handler-resolver';
+import { handlerPath } from "@libs/handler-resolver";
 
 export default {
   handler: `${handlerPath(__dirname)}/handler.main`,
   events: [
     {
       http: {
-        method: 'get',
-        path: 'getall',
+        method: "get",
+        path: "getall",
       },
     },
   ],

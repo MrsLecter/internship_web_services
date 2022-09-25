@@ -2,28 +2,25 @@ import {
   formatJSONResponse,
   formatJSONResponseError,
 } from "../../libs/api-gateway";
-import type { ValidatedEventAPIGatewayProxyEvent } from '@libs/api-gateway';
-const { DeleteObjectCommand } = require("@aws-sdk/client-s3");
+import type { ValidatedEventAPIGatewayProxyEvent } from "@libs/api-gateway";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { middyfy } from "../../libs/lambda";
-
-const { dynamoDB } = require("../../libs/db-client");
-const { s3Client } = require("../../libs/s3-client");
+import { dynamoDB } from "../../libs/db-client";
+import { s3Client } from "../../libs/s3-client";
 
 const CryptoJS = require("crypto-js");
 
-import schema from './schema';
+import schema from "./schema";
 
-// error handler
 const Boom = require("@hapi/boom");
-
-//configure constant
 const BUCKET_NAME = process.env.BUCKET_NAME;
 
-const deleteImage: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
+const deleteImage: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
+  event,
+) => {
   const userEmail = event.body.email;
   const imageName = event.queryStringParameters["name"];
 
-  //-----delete from bucket -----
   try {
     const params = { Key: imageName, Bucket: BUCKET_NAME };
     await s3Client.send(new DeleteObjectCommand(params));
@@ -35,12 +32,10 @@ const deleteImage: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (ev
       {
         message: error,
       },
-      error.output.statusCode
+      error.output.statusCode,
     );
   }
-  //-----/delete from bucket -----
 
-  //-----delete from db-----
   try {
     const paramsDelete = {
       Key: {
@@ -62,10 +57,9 @@ const deleteImage: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (ev
       {
         message: error,
       },
-      error.output.statusCode
+      error.output.statusCode,
     );
   }
-  //-----delete from db-----
 
   return formatJSONResponse({
     message: `Image [${imageName}] deleted by user [${userEmail}]`,

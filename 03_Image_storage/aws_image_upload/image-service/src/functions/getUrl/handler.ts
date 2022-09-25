@@ -1,4 +1,4 @@
-import {formatJSONResponse} from "../../libs/api-gateway";
+import { formatJSONResponse } from "../../libs/api-gateway";
 import middyJsonBodyParser from "@middy/http-json-body-parser";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 import middy from "@middy/core";
@@ -13,7 +13,7 @@ const Conditions = [{ acl: "public-read", bucket: process.env.BUCKET_NAME }];
 
 const getUrl = async (event) => {
   const imageName = event.queryStringParameters["name"];
-  console.log('input', imageName);  
+  console.log("input", imageName);
 
   //Users without AWS credentials can use the URL and fields to to make a POST request to S3.
   const { url, fields } = await createPresignedPost(s3Client, {
@@ -23,7 +23,7 @@ const getUrl = async (event) => {
       .substring(2)}-${imageName}`,
     Conditions: Conditions,
     Fields: Fields,
-    Expires: 3600, 
+    Expires: 3600,
   });
 
   return formatJSONResponse({

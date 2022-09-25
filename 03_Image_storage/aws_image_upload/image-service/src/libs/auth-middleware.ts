@@ -6,13 +6,11 @@ const identityServiceProvider = new CognitoIdentityServiceProvider({
 });
 
 export const authMiddleware = () => {
-  const customMiddlewareBefore =async (request) => {
+  const customMiddlewareBefore = async (request) => {
     const { event } = request;
-    //user data
     const userEmail = event.body.email;
     const userPass = event.body.password;
-    
-    //inject user data from token
+
     const token = event.headers["Authorization"].split(" ")[1];
     const rawUser = await identityServiceProvider
       .getUser({ AccessToken: token })
@@ -20,7 +18,7 @@ export const authMiddleware = () => {
     const email = rawUser.UserAttributes.find((attr) => attr.Name === "email")
       ?.Value!;
     const password = rawUser.UserAttributes.find(
-      (attr) => attr.Name === "password"
+      (attr) => attr.Name === "password",
     )?.Value!;
 
     if (userEmail == email && userPass == password) {
@@ -30,7 +28,7 @@ export const authMiddleware = () => {
         {
           message: `Invalid token`,
         },
-        400
+        400,
       );
     }
   };

@@ -1,6 +1,10 @@
-
-import 'cross-fetch/polyfill';
-import { AuthenticationDetails, CognitoUser, CognitoUserAttribute, CognitoUserPool } from 'amazon-cognito-identity-js';
+import "cross-fetch/polyfill";
+import {
+  AuthenticationDetails,
+  CognitoUser,
+  CognitoUserAttribute,
+  CognitoUserPool,
+} from "amazon-cognito-identity-js";
 
 export interface IUserToken {
   accessToken: string;
@@ -12,31 +16,49 @@ class CognitoUserPoolHelper {
 
   constructor() {
     this.userPool = new CognitoUserPool({
-      UserPoolId: process.env.USER_POOL || '',
-      ClientId: process.env.CLIENT || '',
+      UserPoolId: process.env.USER_POOL || "",
+      ClientId: process.env.CLIENT || "",
     });
   }
 
-  public signUp({ email, password }: { email: string, password: string }): Promise<string> {
+  public signUp({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }): Promise<string> {
     return new Promise((resolve, reject) => {
       const attributeList: CognitoUserAttribute[] = [
         new CognitoUserAttribute({
-          Name: 'email',
+          Name: "email",
           Value: email,
         }),
       ];
 
-      this.userPool.signUp(email, password, attributeList, [], (err, result) => {
-        if (err) {
-          return reject(err);
-        }
+      this.userPool.signUp(
+        email,
+        password,
+        attributeList,
+        [],
+        (err, result) => {
+          if (err) {
+            return reject(err);
+          }
 
-        resolve(result?.user.getUsername() || '');
-      });
+          resolve(result?.user.getUsername() || "");
+        },
+      );
     });
   }
 
-  public confirmSignUp({ email, code }: { email: string, code: string }): Promise<string> {
+  public confirmSignUp({
+    email,
+    code,
+  }: {
+    email: string;
+    code: string;
+  }): Promise<string> {
     return new Promise((resolve, reject) => {
       const cognitoUser = new CognitoUser({
         Username: email,
@@ -53,9 +75,13 @@ class CognitoUserPoolHelper {
     });
   }
 
-  public signIn(
-    { email, password }: { email: string, password: string },
-  ): Promise<IUserToken | { userConfirmationNecessary: boolean }> {
+  public signIn({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }): Promise<IUserToken | { userConfirmationNecessary: boolean }> {
     return new Promise((resolve, reject) => {
       const cognitoUser = new CognitoUser({
         Username: email,

@@ -1,6 +1,5 @@
 import middy from "@middy/core";
 import middyJsonBodyParser from "@middy/http-json-body-parser";
-
 import { authMiddleware } from "./auth-middleware";
 import { credentialsMiddleware } from "./credentials_middleware";
 

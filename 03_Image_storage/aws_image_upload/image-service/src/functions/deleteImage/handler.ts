@@ -7,19 +7,17 @@ import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { middyfy } from "../../libs/lambda";
 import { dynamoDB } from "../../libs/db-client";
 import { s3Client } from "../../libs/s3-client";
-
-const CryptoJS = require("crypto-js");
-
+import * as CryptoJS from "crypto-js";
 import schema from "./schema";
+import * as Boom from "@hapi/boom";
 
-const Boom = require("@hapi/boom");
 const BUCKET_NAME = process.env.BUCKET_NAME;
 
 const deleteImage: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
   event,
 ) => {
-  const userEmail = event.body.email;
-  const imageName = event.queryStringParameters["name"];
+  const userEmail = event.body.email as string;
+  const imageName = event.queryStringParameters.name as string;
 
   try {
     const params = { Key: imageName, Bucket: BUCKET_NAME };

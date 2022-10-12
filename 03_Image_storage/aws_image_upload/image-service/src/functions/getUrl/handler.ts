@@ -1,9 +1,9 @@
 import { formatJSONResponse } from "../../libs/api-gateway";
 import middyJsonBodyParser from "@middy/http-json-body-parser";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
+import { APIGatewayEvent } from "aws-lambda";
 import middy from "@middy/core";
-
-const { s3Client } = require("../../libs/s3-client");
+import { s3Client } from "../../libs/s3-client";
 
 const BUCKET_PREFIX = "/";
 const Fields = {
@@ -11,11 +11,10 @@ const Fields = {
 };
 const Conditions = [{ acl: "public-read", bucket: process.env.BUCKET_NAME }];
 
-const getUrl = async (event) => {
+const getUrl = async (event: APIGatewayEvent) => {
   const imageName = event.queryStringParameters["name"];
-  console.log("input", imageName);
+  console.log("input image name", imageName);
 
-  //Users without AWS credentials can use the URL and fields to to make a POST request to S3.
   const { url, fields } = await createPresignedPost(s3Client, {
     Bucket: process.env.BUCKET_NAME,
     Key: `${BUCKET_PREFIX}-${(Math.random() + 1)

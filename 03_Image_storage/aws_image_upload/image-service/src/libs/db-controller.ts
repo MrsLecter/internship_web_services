@@ -1,7 +1,10 @@
-const { dynamoDB } = require("./db-client");
-const CryptoJS = require("crypto-js");
+import { dynamoDB } from "./db-client";
+import * as CryptoJS from "crypto-js";
 
-export const deleteImagePromise = async (userEmail, imageName) => {
+export const deleteImagePromise = async (
+  userEmail: string,
+  imageName: string,
+): Promise<void> => {
   const paramsDelete = {
     Key: {
       user: {
@@ -21,7 +24,10 @@ export const deleteImagePromise = async (userEmail, imageName) => {
   await dynamoDB.deleteItem(paramsDelete).promise();
 };
 
-export const postImagePromise = async (userEmail, imageName) => {
+export const postImagePromise = async (
+  userEmail: string,
+  imageName: string,
+): Promise<void> => {
   const paramsPUT = {
     Item: {
       user: {

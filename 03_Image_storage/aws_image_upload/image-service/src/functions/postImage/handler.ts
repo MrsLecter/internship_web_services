@@ -2,16 +2,17 @@ import {
   formatJSONResponse,
   formatJSONResponseError,
 } from "../../libs/api-gateway";
-const { ListObjectsCommand, PutObjectCommand } = require("@aws-sdk/client-s3");
+import { APIGatewayEvent } from "aws-lambda";
+import { ListObjectsCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { middyfy } from "../../libs/lambda";
-const CryptoJS = require("crypto-js");
+import * as CryptoJS from "crypto-js";
 
-const { s3Client } = require("../../libs/s3-client");
-const { dynamoDB } = require("../../libs/db-client");
+import { s3Client } from "../../libs/s3-client";
+import { dynamoDB } from "../../libs/db-client";
 
-const Boom = require("@hapi/boom");
+import * as Boom from "@hapi/boom";
 
-const postImage = async (event) => {
+const postImage = async (event: APIGatewayEvent) => {
   const userEmail = event.queryStringParameters["email"];
   const imageName = event.queryStringParameters["name"];
 

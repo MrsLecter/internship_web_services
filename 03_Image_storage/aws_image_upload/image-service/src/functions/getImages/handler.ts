@@ -6,16 +6,17 @@ import type { ValidatedEventAPIGatewayProxyEvent } from "@libs/api-gateway";
 import { middyfy } from "../../libs/lambda";
 import { dynamoDB } from "../../libs/db-client";
 import schema from "./schema";
+import * as Boom from "@hapi/boom";
+import * as sdk from "aws-sdk";
 
-const Boom = require("@hapi/boom");
 const BASE_URL = `https://${process.env.BUCKET_NAME}.s3.amazonaws.com/`;
 
 const getImages: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
   event,
 ) => {
-  const userEmail = event.body.email;
+  const userEmail = event.body.email as string;
 
-  //-----get info from s3bucket-----
+  //-----get info from s3bucket----- another approach
   // const data = await s3Client.send(
   //   new ListObjectsCommand({
   //     Bucket: process.env.BUCKET_NAME,
@@ -38,11 +39,11 @@ const getImages: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
 
   let results;
   try {
-    const params = {
+    const params: sdk.DynamoDB.Types.QueryInput = {
       TableName: process.env.TABLE_NAME,
       KeyConditionExpression: `#current = :cccc`,
       ExpressionAttributeNames: { "#current": "user" },
-      ExpressionAttributeValues: { ":cccc": { S: userEmail } },
+      ExpressionAttributeValues: { ":cccc": { S: userEmail as string } },
     };
     results = await dynamoDB.query(params).promise();
   } catch (err) {
@@ -57,7 +58,7 @@ const getImages: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
     );
   }
   let res = "";
-  let name;
+  let name: string;
   for (let i = 0; i < results.Items.length; i++) {
     name = results.Items[i].imageName.S;
     res += `${name}: ${BASE_URL + name}`;

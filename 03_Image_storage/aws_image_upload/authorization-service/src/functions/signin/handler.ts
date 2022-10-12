@@ -5,11 +5,9 @@ import {
 } from "../../libs/api-gateway";
 import { middyfy } from "../../libs/lambda";
 import cognitoRoutes from "../../libs/cognito-routes";
-
 import schema from "./schema";
-
-const Boom = require("@hapi/boom");
-const Joi = require("joi");
+import * as Boom from "@hapi/boom";
+import * as Joi from "joi";
 
 const joiSchema = Joi.object({
   email: Joi.string().email({

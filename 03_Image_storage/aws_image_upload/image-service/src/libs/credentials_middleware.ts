@@ -1,5 +1,5 @@
 import { formatJSONResponseError } from "./api-gateway";
-const Joi = require("joi");
+import * as Joi from "joi";
 
 const joiSchema = Joi.object({
   email: Joi.string().email({

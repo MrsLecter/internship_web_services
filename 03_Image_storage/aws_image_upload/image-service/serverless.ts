@@ -46,42 +46,38 @@ const serverlessConfiguration: AWS = {
   },
   resources: {
     Resources: {
-      // MyApi: {
-      //   Type: 'AWS::Serverless::Api',
-      //   Properties: {
-      //     StageName: "Prod",
-      //     Cors: "'*'",
-      //     Auth: {
-      //       DefaultAuthorizer: 'MyCognitoAuthorizer',
-      //       Authorizers: {
-      //         MyCognitoAuthorizer: {
-      //           UserPoolArn: 'arn:aws:cognito-idp:us-east-1:344387451641:userpool/us-east-1_CIHwDAAt7'
-      //         }
+      MyApi: {
+        Type: "AWS::Serverless::Api",
+        Properties: {
+          StageName: "Prod",
+          Cors: "'*'",
+          Auth: {
+            DefaultAuthorizer: "MyCognitoAuthorizer",
+            Authorizers: {
+              MyCognitoAuthorizer: {
+                UserPoolArn:
+                  "arn:aws:cognito-idp:us-east-1:344387451641:userpool/us-east-1_CIHwDAAt7",
+              },
+            },
+          },
+        },
+      },
 
-      //       }
-
-      //     }
-
-      //   }
-
-      // },
-
-      // imageS3bucket: {
-      //   Type: 'AWS::S3::Bucket',
-      //   Properties:{
-      //     BucketName: 'image-s3bucket-storage-next',
-      //     CorsConfiguration:{
-      //       CorsRules:[
-      //         {
-      //           AllowedHeaders: ["*"],
-      //           AllowedMethods: ["GET", "POST", "DELETE"],
-      //           AllowedOrigins: ["*"]
-      //         },
-      //       ]
-      //     }
-
-      //   }
-      // },
+      imageS3bucket: {
+        Type: "AWS::S3::Bucket",
+        Properties: {
+          BucketName: "image-s3bucket-storage-next",
+          CorsConfiguration: {
+            CorsRules: [
+              {
+                AllowedHeaders: ["*"],
+                AllowedMethods: ["GET", "POST", "DELETE"],
+                AllowedOrigins: ["*"],
+              },
+            ],
+          },
+        },
+      },
       CognitoUserPool: {
         Type: "AWS::Cognito::UserPool",
       },

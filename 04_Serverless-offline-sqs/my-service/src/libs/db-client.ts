@@ -1,7 +1,7 @@
-var mysql = require("mysql");
-const { v4 } = require("uuid");
+import * as mysql from "mysql";
+import { v4 } from "uuid";
 
-var connection = mysql.createConnection({
+const connection = mysql.createConnection({
   host: process.env.DB_ENDPOINT,
   user: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
@@ -23,7 +23,7 @@ export const getData = async () => {
   return data;
 };
 
-export const postData = async (token) => {
+export const postData = async (token: string) => {
   const data = await new Promise((resolve, reject) => {
     connection.connect();
     connection.query(

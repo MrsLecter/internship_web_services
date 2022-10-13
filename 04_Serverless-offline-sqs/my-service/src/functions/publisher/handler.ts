@@ -1,16 +1,18 @@
 import { formatJSONResponse, formatJSONResponseError } from "@libs/api-gateway";
 import { middyfy } from "@libs/lambda";
+import * as Boom from "@hapi/boom";
+import * as AWS from "aws-sdk";
 
-const Boom = require("@hapi/boom");
-
-const AWS = require("aws-sdk");
 const sqs = new AWS.SQS({
   apiVersion: "latest",
   region: process.env.REGION,
 });
 
 const publisher = async (event) => {
-  const body = event.body;
+  const body: {
+    user: string;
+    token: string;
+  } = event.body;
   try {
     const params = {
       QueueUrl: process.env.SQS_URL,
@@ -19,7 +21,7 @@ const publisher = async (event) => {
         token: body.token,
       }),
     };
-    sqs.sendMessage(params, function (err, data) {
+    sqs.sendMessage(params, (err, data) => {
       if (err) {
         console.log("Error", err);
       } else {

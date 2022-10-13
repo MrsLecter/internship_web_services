@@ -2,10 +2,9 @@ import { formatJSONResponse, formatJSONResponseError } from "@libs/api-gateway";
 import { SQSEvent } from "aws-lambda";
 import { middyfy } from "@libs/lambda";
 import { postData } from "../../libs/db-client";
+import * as Boom from "@hapi/boom";
+import * as AWS from "aws-sdk";
 
-const Boom = require("@hapi/boom");
-
-const AWS = require("aws-sdk");
 const sqs = new AWS.SQS({
   apiVersion: "latest",
   region: process.env.REGION,
@@ -17,7 +16,7 @@ const consumer = async (event: SQSEvent) => {
       MaxNumberOfMessages: 1,
       QueueUrl: process.env.SQS_URL,
     };
-    sqs.receiveMessage(params, function (err, data) {
+    sqs.receiveMessage(params, (err, data) => {
       if (err) {
         console.log("Receive Error", err);
       } else if (data.Messages) {
@@ -27,7 +26,7 @@ const consumer = async (event: SQSEvent) => {
           QueueUrl: process.env.SQS_URL,
           ReceiptHandle: data.Messages[0].ReceiptHandle,
         };
-        sqs.deleteMessage(deleteParams, function (err, data) {
+        sqs.deleteMessage(deleteParams, (err, data) => {
           if (err) {
             console.log("Delete Error", err);
           } else {

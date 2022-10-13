@@ -1,8 +1,7 @@
 import { formatJSONResponse, formatJSONResponseError } from "@libs/api-gateway";
 import { middyfy } from "@libs/lambda";
 import { getData } from "../../libs/db-client";
-
-const Boom = require("@hapi/boom");
+import * as Boom from "@hapi/boom";
 
 const getall = async () => {
   return getData()

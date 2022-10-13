@@ -45,7 +45,7 @@ const serverlessConfiguration: AWS = {
       },
     ],
   },
-  //create new que
+  //create new que(have already created in custom.conf)
   // resources:{
   //   Resources: {
   //     MyQueue:{

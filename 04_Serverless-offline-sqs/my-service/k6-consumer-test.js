@@ -6,7 +6,7 @@ export const options = {
 
   stages: [{ duration: "1m", target: 10 }],
   thresholds: {
-    runcounter: ["count>=1000"],
+    runcounter: ["count>=100"],
     http_req_failed: ["rate<0.01"],
     http_req_duration: ["p(95)<300"],
   },

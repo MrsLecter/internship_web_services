@@ -5,9 +5,8 @@ import {
 } from "../../libs/api-gateway";
 import { middyfy } from "../../libs/lambda";
 import schema from "./schema";
-
-const Boom = require("@hapi/boom");
-const Joi = require("joi");
+import * as Boom from "@hapi/boom";
+import * as Joi from "joi";
 
 const joiSchema = Joi.object({
   username: Joi.string().alphanum().min(3).max(30).required(),

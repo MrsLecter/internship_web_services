@@ -18,6 +18,30 @@ const serverlessConfiguration: AWS = {
       minimumCompressionSize: 1024,
       shouldStartNameWithService: true,
     },
+    iam: {
+      role: {
+        statements: [
+          {
+            Effect: "Allow",
+            Action: [
+              "dynamodb:DescribeTable",
+              "dynamodb:Query",
+              "dynamodb:Scan",
+              "dynamodb:GetItem",
+              "dynamodb:PutItem",
+              "dynamodb:UpdateItem",
+              "dynamodb:DeleteItem",
+            ],
+            Resource: process.env.DYNAMO_ARN,
+          },
+          {
+            Effect: "Allow",
+            Action: ["s3:*"],
+            Resource: process.env.COGNITO_ARN,
+          },
+        ],
+      },
+    },
     environment: {
       BUCKET_NAME: process.env.BUCKET_NAME,
       REGION: process.env.REGION,
@@ -35,10 +59,9 @@ const serverlessConfiguration: AWS = {
       authorizers: {
         Cognito: {
           type: "cognito",
-          userPoolArn:
-            "arn:aws:cognito-idp:us-east-1:344387451641:userpool/us-east-1_CIHwDAAt7",
-          userPoolClientId: "3ebo75r6gul173m7fso9o2chka",
-          userPoolDomain: "e3ygsvc037",
+          userPoolArn: process.env.USER_POOL_ARN,
+          userPoolClientId: process.env.USER_POOL_CLIENT_ID,
+          userPoolDomain: process.env.USER_POOL_DOMAIN,
           onUnauthenticatedRequest: "authenticate",
         },
       },
@@ -55,8 +78,7 @@ const serverlessConfiguration: AWS = {
             DefaultAuthorizer: "MyCognitoAuthorizer",
             Authorizers: {
               MyCognitoAuthorizer: {
-                UserPoolArn:
-                  "arn:aws:cognito-idp:us-east-1:344387451641:userpool/us-east-1_CIHwDAAt7",
+                UserPoolArn: process.env.USER_POOL_ARN,
               },
             },
           },
@@ -77,9 +99,6 @@ const serverlessConfiguration: AWS = {
             ],
           },
         },
-      },
-      CognitoUserPool: {
-        Type: "AWS::Cognito::UserPool",
       },
       UsersTable: {
         Type: "AWS::DynamoDB::Table",

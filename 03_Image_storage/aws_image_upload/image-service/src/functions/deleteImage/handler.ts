@@ -3,15 +3,11 @@ import {
   formatJSONResponseError,
 } from "../../libs/api-gateway";
 import type { ValidatedEventAPIGatewayProxyEvent } from "@libs/api-gateway";
-import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { middyfy } from "../../libs/lambda";
-import { dynamoDB } from "../../libs/db-client";
-import { s3Client } from "../../libs/s3-client";
-import * as CryptoJS from "crypto-js";
+import databaseRouts from "../../controllers/db-controller";
+import s3Routs from "../../controllers/s3-controller";
 import schema from "./schema";
 import * as Boom from "@hapi/boom";
-
-const BUCKET_NAME = process.env.BUCKET_NAME;
 
 const deleteImage: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
   event,
@@ -19,13 +15,8 @@ const deleteImage: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
   const userEmail = event.body.email as string;
   const imageName = event.queryStringParameters.name as string;
 
-  try {
-    const params = { Key: imageName, Bucket: BUCKET_NAME };
-    await s3Client.send(new DeleteObjectCommand(params));
-  } catch (err) {
-    const error = Boom.badRequest("S3Client error" + (err as Error).message);
-    error.output.statusCode = 400;
-    error.reformat();
+  if (!userEmail && !imageName) {
+    const error = Boom.badRequest("User email and image name not found!");
     return formatJSONResponseError(
       {
         message: error,
@@ -35,22 +26,19 @@ const deleteImage: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
   }
 
   try {
-    const paramsDelete = {
-      Key: {
-        user: {
-          S: userEmail,
-        },
-        imageHash: {
-          S: CryptoJS.SHA256(imageName).toString(CryptoJS.enc.Base64),
-        },
+    await s3Routs.deleteImage(imageName);
+  } catch (err: any) {
+    const error = Boom.badRequest("S3Client error: " + (err as Error).message);
+    return formatJSONResponseError(
+      {
+        message: error,
       },
-      TableName: process.env.TABLE_NAME,
-    };
-    await dynamoDB.deleteItem(paramsDelete).promise();
-  } catch (err) {
-    const error = Boom.badRequest("DynamoDB error" + (err as Error).message);
-    error.output.statusCode = 400;
-    error.reformat();
+      error.output.statusCode,
+    );
+  }
+  try {
+    await databaseRouts.deleteImage(imageName, userEmail);
+  } catch (error: any) {
     return formatJSONResponseError(
       {
         message: error,

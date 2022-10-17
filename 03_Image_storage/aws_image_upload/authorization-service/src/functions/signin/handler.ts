@@ -30,8 +30,6 @@ const signin: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
     }
   } catch (err) {
     const error = Boom.badRequest((err as Error).message);
-    error.output.statusCode = 400;
-    error.reformat();
     return formatJSONResponseError(
       {
         message: error,
@@ -39,8 +37,6 @@ const signin: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
       error.output.statusCode,
     );
   }
-
-  console.log("email", email, "password", password);
   return cognitoRoutes
     .signIn({ email, password })
     .then((data) => {

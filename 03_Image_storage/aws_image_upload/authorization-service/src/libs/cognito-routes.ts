@@ -6,10 +6,7 @@ import {
   CognitoUserPool,
 } from "amazon-cognito-identity-js";
 
-export interface IUserToken {
-  accessToken: string;
-  refreshToken: string;
-}
+import { IUserToken } from "../interfaces/interfaces";
 
 class CognitoUserPoolHelper {
   public userPool: CognitoUserPool;

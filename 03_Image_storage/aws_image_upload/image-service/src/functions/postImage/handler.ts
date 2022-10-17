@@ -3,40 +3,20 @@ import {
   formatJSONResponseError,
 } from "../../libs/api-gateway";
 import { APIGatewayEvent } from "aws-lambda";
-import { ListObjectsCommand, PutObjectCommand } from "@aws-sdk/client-s3";
-import { middyfy } from "../../libs/lambda";
-import * as CryptoJS from "crypto-js";
-
-import { s3Client } from "../../libs/s3-client";
-import { dynamoDB } from "../../libs/db-client";
-
 import * as Boom from "@hapi/boom";
+import { middyfy } from "../../libs/lambda";
+
+import databaseRouts from "../../controllers/db-controller";
+import s3Routs from "../../controllers/s3-controller";
 
 const postImage = async (event: APIGatewayEvent) => {
   const userEmail = event.queryStringParameters["email"];
   const imageName = event.queryStringParameters["name"];
 
-  try {
-    const paramsPUT = {
-      Item: {
-        user: {
-          S: userEmail,
-        },
-        imageHash: {
-          S: CryptoJS.SHA256(imageName).toString(CryptoJS.enc.Base64),
-        },
-        imageName: {
-          S: imageName,
-        },
-      },
-      TableName: process.env.TABLE_NAME,
-    };
-
-    await dynamoDB.putItem(paramsPUT).promise();
-  } catch (err) {
-    const error = Boom.badRequest("DynamoDB error" + (err as Error).message);
-    error.output.statusCode = 400;
-    error.reformat();
+  if (!imageName && !event.body) {
+    const error = Boom.badRequest(
+      "You need to upload a file and enter its name",
+    );
     return formatJSONResponseError(
       {
         message: error,
@@ -46,36 +26,9 @@ const postImage = async (event: APIGatewayEvent) => {
   }
 
   try {
-    await s3Client.send(
-      new ListObjectsCommand({
-        Bucket: process.env.BUCKET_NAME,
-      }),
-    );
-    const uploadParams = {
-      Bucket: process.env.BUCKET_NAME,
-      Key: imageName,
-      Body: event.body,
-    };
-    try {
-      await s3Client.send(new PutObjectCommand(uploadParams));
-      console.log("Successfully uploaded photo.");
-    } catch (err) {
-      const error = Boom.badRequest(
-        "There was an error uploading your photo: " + (err as Error).message,
-      );
-      error.output.statusCode = 400;
-      error.reformat();
-      return formatJSONResponseError(
-        {
-          message: error,
-        },
-        error.output.statusCode,
-      );
-    }
-  } catch (err) {
-    const error = Boom.badRequest((err as Error).message);
-    error.output.statusCode = 400;
-    error.reformat();
+    await databaseRouts.postImage(userEmail, imageName);
+    await s3Routs.uploadImage(imageName, event.body);
+  } catch (error: any) {
     return formatJSONResponseError(
       {
         message: error,

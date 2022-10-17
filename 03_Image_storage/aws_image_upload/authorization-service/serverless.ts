@@ -25,6 +25,13 @@ const serverlessConfiguration: AWS = {
     },
     region: "us-east-1",
   },
+  resources: {
+    Resources: {
+      CognitoUserPool: {
+        Type: "AWS::Cognito::UserPool",
+      },
+    },
+  },
   functions: { signin, logout, signup },
   package: { individually: true },
   custom: {

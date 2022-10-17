@@ -30,8 +30,6 @@ const signup: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
     }
   } catch (err) {
     const error = Boom.badRequest((err as Error).message);
-    error.output.statusCode = 400;
-    error.reformat();
     return formatJSONResponseError(
       {
         message: error,
@@ -44,7 +42,7 @@ const signup: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
     .signUp({ email, password })
     .then(() => {
       return formatJSONResponse({
-        message: `Email ${email} is created. The verification code was sent to the specified address`,
+        message: `User with email ${email} is created. The verification code was sent to the specified address`,
       });
     })
     .catch((error) => {

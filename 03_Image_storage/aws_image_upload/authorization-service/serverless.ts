@@ -2,6 +2,7 @@ import type { AWS } from "@serverless/typescript";
 
 import signin from "@functions/signin";
 import logout from "@functions/confirm";
+import presignup from "@functions/presignup";
 import signup from "@functions/signup";
 
 require("dotenv").config();
@@ -32,7 +33,7 @@ const serverlessConfiguration: AWS = {
       },
     },
   },
-  functions: { signin, logout, signup },
+  functions: { signin, logout, signup, presignup },
   package: { individually: true },
   custom: {
     webpack: {

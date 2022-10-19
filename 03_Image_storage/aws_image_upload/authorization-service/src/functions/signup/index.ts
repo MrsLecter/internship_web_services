@@ -13,6 +13,9 @@ export default {
             "application/json": schema,
           },
         },
+        response: {
+          autoConfirmUser: true,
+        },
       },
     },
   ],

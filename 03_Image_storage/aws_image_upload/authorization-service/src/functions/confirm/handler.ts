@@ -31,7 +31,6 @@ const confirm: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
   } catch (err) {
     const error = Boom.badRequest((err as Error).message);
     error.output.statusCode = 400;
-    error.reformat();
     return formatJSONResponseError(
       {
         message: error,
@@ -49,11 +48,12 @@ const confirm: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
       });
     })
     .catch((err) => {
+      const error = Boom.badRequest((err as Error).message);
       return formatJSONResponseError(
         {
-          message: err,
+          message: error,
         },
-        400,
+        error.output.statusCode,
       );
     });
 };

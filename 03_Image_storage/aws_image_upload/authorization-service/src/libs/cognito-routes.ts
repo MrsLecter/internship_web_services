@@ -5,7 +5,6 @@ import {
   CognitoUserAttribute,
   CognitoUserPool,
 } from "amazon-cognito-identity-js";
-
 import { IUserToken } from "../interfaces/interfaces";
 
 class CognitoUserPoolHelper {

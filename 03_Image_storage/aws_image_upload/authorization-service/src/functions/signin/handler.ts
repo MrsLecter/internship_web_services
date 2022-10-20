@@ -45,11 +45,12 @@ const signin: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
       });
     })
     .catch((err) => {
+      const error = Boom.badRequest((err as Error).message);
       return formatJSONResponseError(
         {
-          message: err,
+          message: error,
         },
-        400,
+        error.output.statusCode,
       );
     });
 };
